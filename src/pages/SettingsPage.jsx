@@ -20,7 +20,7 @@ export default function SettingsPage() {
       iban: data.iban,
       address: data.address,
       defaultHourlyRate: parseFloat(data.defaultHourlyRate) || 0,
-      defaultVatRate: parseInt(data.defaultVatRate) || 21,
+      defaultVatRate: parseInt(data.defaultVatRate, 10) || 21,
       taxReservePercent: parseFloat(data.taxReservePercent) || 30,
       vacationSavingsPercent: parseFloat(data.vacationSavingsPercent) || 8,
     })
