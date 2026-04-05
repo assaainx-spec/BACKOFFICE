@@ -1,10 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from './BottomNav'
 
 export default function AppShell({ children }) {
   const [showNew, setShowNew] = useState(false)
   const navigate = useNavigate()
+
+  // Lock body scroll when sheet is open
+  useEffect(() => {
+    document.body.style.overflow = showNew ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [showNew])
 
   function handleAction(action) {
     setShowNew(false)

@@ -9,7 +9,10 @@ const tabs = [
 
 export default function BottomNav({ onNew }) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-mantle border-t border-overlay flex items-center justify-around px-2 pb-4">
+    <nav
+      className="fixed bottom-0 left-0 right-0 bg-mantle border-t border-overlay flex items-center justify-around px-2"
+      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+    >
       {tabs.slice(0, 2).map(tab => (
         <NavLink
           key={tab.to}
