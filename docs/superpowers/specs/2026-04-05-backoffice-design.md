@@ -62,7 +62,9 @@ clients/{clientId}
   notes
 
 invoices/{invoiceId}
-  invoiceNumber           — auto, sequential, format YYYY-NNN, immutable once issued
+  invoiceNumber           — assigned only when status changes to "sent"; null on drafts
+                            format YYYY-NNN, sequential, immutable once assigned
+  tempId                  — human-readable draft label (e.g. "Draft #3"), discarded on send
   clientId
   clientSnapshot          — name/address copied at time of invoice (client may change)
   language: "nl" | "en" | "pl"
@@ -77,17 +79,21 @@ invoices/{invoiceId}
   subtotal                — sum of line totals excl. VAT
   vatAmount               — sum of VAT per line
   totalAmount             — subtotal + vatAmount
-  status: "draft" | "sent" | "paid" | "overdue"
-  issueDate, dueDate, paidDate
+  status: "draft" | "sent" | "paid" | "overdue" | "voided"
+  issueDate               — date invoice is sent; used for VAT quarter assignment (factuurstelsel)
+  dueDate, paidDate       — paidDate used for cashflow only, not VAT
   notes
 
 expenses/{expenseId}
   description
   amount                  — total incl. VAT
-  vatAmount               — extracted or calculated
+  vatAmount               — extracted (OCR suggestion) or calculated; always user-verified
   vatRate: 0 | 9 | 21
+  deductiblePercent       — default 100; set lower for partial/mixed-use expenses
   category: "fixed" | "variable"
   tag: "business" | "private"
+  recurring               — boolean; if true, counts as upcoming fixed expense in cashflow
+  recurringAmount         — monthly amount used for cashflow forecast (may differ from last receipt)
   date, vendor
   receiptUrl              — Firebase Storage path
   status: "added" | "pending" | "accounted"
@@ -96,8 +102,10 @@ expenses/{expenseId}
 
 **VAT and cashflow are computed on the fly** — no separate aggregation collection in MVP.
 
-- **VAT owed (quarter)** = Σ invoice VAT (sent/paid in quarter) − Σ expense VAT (business, in quarter)
-- **Cashflow forecast** = current balance + Σ unpaid invoice totals − Σ upcoming fixed expenses
+- **VAT system:** factuurstelsel (invoice-based) — standard for eenmanszaak
+- **VAT owed (quarter)** = Σ invoice VAT where `issueDate` falls in quarter − Σ expense VAT (business, `deductiblePercent` applied)
+- **Cashflow forecast** = starting balance + Σ unpaid invoice totals − Σ expenses where `recurring = true`
+- `paidDate` and invoice `status = paid` are used for cashflow tracking only, not for VAT
 
 ---
 
@@ -113,6 +121,8 @@ Every invoice must include:
 - IBAN + EPC QR code for iDEAL payment
 
 Invoice languages supported: Dutch (NL), English (EN), Polish (PL) — selected per invoice.
+
+Each language uses a **full template block** — not just translated labels. Legal phrasing, VAT wording ("BTW" vs "VAT" vs "VAT PL"), and payment term language are written natively per locale. A translated label approach produces invoices that feel off to native readers and may not meet local expectations.
 
 ---
 
@@ -141,14 +151,17 @@ Clients are accessible from within the Invoices tab (not a separate tab).
 
 ### Invoice Creation (2 steps)
 1. **Build** — select client, choose language, set due date, add lines (hourly or fixed, mixable), auto-calculated VAT and totals, save draft or proceed
-2. **Preview & Send** — mini PDF preview (with QR code), send via email / share link / download PDF
+2. **Preview & Send** — mini PDF preview (with QR code), send via email (PDF always attached, not just a link), share link, or download PDF for manual sending. Download fallback always available in case of email delivery issues.
 
 ### Expenses
-- Scan receipt button (OCR fills amount, VAT, vendor, date automatically)
-- Manual fallback fields
+- Scan receipt button — OCR extracts amount, VAT, vendor, date as *suggestions*
+- All extracted fields are shown as editable before saving — OCR is never treated as final truth
+- One tap to confirm if fields are correct; edit inline if not
+- Manual entry fallback (no scan)
 - Business / private toggle (manual, required)
 - Category toggle: fixed / variable
-- Auto-calculated deductible VAT shown before saving
+- Recurring toggle — if enabled, expense appears in cashflow upcoming list with a monthly estimate
+- Auto-calculated deductible VAT shown before saving (respects deductiblePercent)
 
 ### VAT Overview (in Reports)
 - Quarter selector
@@ -159,12 +172,13 @@ Clients are accessible from within the Invoices tab (not a separate tab).
 - Export to PDF and CSV
 
 ### Cashflow
-- Current balance (manually entered in settings)
+- Starting balance — user sets this once; shown with "last updated" timestamp so it's never mistaken for live data
+- App accumulates from starting balance: adds received payments, subtracts recorded expenses
 - Incoming: sum of unpaid invoices
 - Outgoing: this month's expenses
-- Set aside section: BTW reserve (auto), income tax estimate (% of profit), vacation savings (% of revenue)
+- Set aside section: BTW reserve (auto, from issueDate-based VAT), income tax estimate (% of profit), vacation savings (% of revenue)
 - End-of-month forecast with progress bar toward optional target
-- Upcoming expenses list (from fixed/recurring costs)
+- Upcoming expenses list — sourced from expenses where `recurring = true`
 
 ---
 
@@ -178,7 +192,7 @@ Clients are accessible from within the Invoices tab (not a separate tab).
 - Income tax reserve estimate (configurable %)
 - Vacation savings tracking (configurable %)
 - Overdue invoice detection
-- Receipt OCR (amount, VAT, vendor, date)
+- Receipt OCR (amount, VAT, vendor, date — as editable suggestions, not final values)
 
 ### One tap from user
 - Mark invoice as paid
