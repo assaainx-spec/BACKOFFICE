@@ -7,7 +7,9 @@ service cloud.firestore {
     }
 
     function userRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return isAuthed()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
     }
 
     function isOwner() {
@@ -19,6 +21,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
+      // Accountants can read their own profile but cannot write it (MVP scope: owner manages all)
       allow read: if isAuthed() && request.auth.uid == userId;
       allow write: if isOwner() && request.auth.uid == userId;
     }
@@ -41,6 +44,11 @@ service cloud.firestore {
     match /expenses/{id} {
       allow read: if canRead();
       allow write: if isOwner();
+    }
+
+    // Deny all access to any collection not explicitly declared above
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
