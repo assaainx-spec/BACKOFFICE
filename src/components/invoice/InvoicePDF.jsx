@@ -7,6 +7,7 @@ const LABELS = {
     invoiceNumber: 'Factuurnummer',
     issueDate: 'Factuurdatum',
     dueDate: 'Vervaldatum',
+    billTo: 'Aan',
     description: 'Omschrijving',
     qty: 'Aantal',
     rate: 'Tarief',
@@ -23,6 +24,7 @@ const LABELS = {
     invoiceNumber: 'Invoice number',
     issueDate: 'Invoice date',
     dueDate: 'Due date',
+    billTo: 'Bill to',
     description: 'Description',
     qty: 'Qty',
     rate: 'Rate',
@@ -39,6 +41,7 @@ const LABELS = {
     invoiceNumber: 'Numer faktury',
     issueDate: 'Data wystawienia',
     dueDate: 'Termin płatności',
+    billTo: 'Nabywca',
     description: 'Opis',
     qty: 'Ilość',
     rate: 'Stawka',
@@ -116,7 +119,7 @@ export default function InvoicePDF({ invoice, seller, qrDataUrl }) {
         {/* Bill to */}
         <View style={s.section}>
           <View style={s.box}>
-            <Text style={s.boxTitle}>Bill to</Text>
+            <Text style={s.boxTitle}>{L.billTo}</Text>
             <Text style={{ fontFamily: 'Helvetica-Bold' }}>{invoice.clientSnapshot?.name}</Text>
             <Text>{invoice.clientSnapshot?.address}</Text>
           </View>

@@ -64,7 +64,7 @@ export default function InvoiceForm({ draft, onNext, onCancel }) {
 
     onNext({
       clientId,
-      clientSnapshot: { name: client.name, address: client.address },
+      clientSnapshot: { name: client.name, address: client.address, email: client.email ?? '' },
       language,
       lines,
       subtotal,
