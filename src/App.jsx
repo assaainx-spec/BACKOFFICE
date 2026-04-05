@@ -7,6 +7,7 @@ import InvoicesPage from './pages/InvoicesPage'
 import ExpensesPage from './pages/ExpensesPage'
 import ReportsPage from './pages/ReportsPage'
 import SettingsPage from './pages/SettingsPage'
+import ClientList from './components/client/ClientList'
 
 function AuthGate({ children }) {
   const { user, loading } = useAuth()
@@ -28,6 +29,7 @@ export default function App() {
                 <Route path="/invoices/*" element={<InvoicesPage />} />
                 <Route path="/expenses/*" element={<ExpensesPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/clients/*" element={<ClientList />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </AppShell>
