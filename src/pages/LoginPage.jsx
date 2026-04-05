@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 import { auth } from '../firebase'
 
 export default function LoginPage() {
@@ -7,6 +8,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -14,6 +16,7 @@ export default function LoginPage() {
     setError('')
     try {
       await signInWithEmailAndPassword(auth, email, password)
+      navigate('/')
     } catch {
       setError('Invalid email or password.')
     } finally {
