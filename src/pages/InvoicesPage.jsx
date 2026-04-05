@@ -64,20 +64,12 @@ function InvoiceListView() {
               </button>
             )}
             {inv.status === 'draft' && (
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={() => navigate(`/invoices/edit/${inv.id}`)}
-                  className="flex-1 bg-blue/10 text-blue rounded-lg py-1.5 text-xs"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteDraft(inv.id)}
-                  className="flex-1 bg-red/10 text-red rounded-lg py-1.5 text-xs"
-                >
-                  Delete
-                </button>
-              </div>
+              <button
+                onClick={() => deleteDraft(inv.id)}
+                className="mt-2 w-full bg-red/10 text-red rounded-lg py-1.5 text-xs font-medium"
+              >
+                Delete draft
+              </button>
             )}
           </div>
         ))}
