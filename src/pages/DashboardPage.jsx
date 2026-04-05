@@ -34,9 +34,12 @@ export default function DashboardPage() {
   return (
     <div className="p-4 space-y-4">
       <div className="flex justify-between items-center">
-        <div>
-          <p className="text-muted text-sm">Good day,</p>
-          <p className="text-text text-xl font-bold">{settings?.businessName ?? 'Your Business'} 👋</p>
+        <div className="flex items-center gap-3">
+          <img src="/logo.png" alt="logo" className="w-12 h-12 object-contain rounded-full" />
+          <div>
+            <p className="text-muted text-sm">Good day,</p>
+            <p className="text-text text-xl font-bold">{settings?.businessName ?? 'Your Business'} 👋</p>
+          </div>
         </div>
         <button onClick={() => navigate('/settings')} className="text-2xl">⚙️</button>
       </div>

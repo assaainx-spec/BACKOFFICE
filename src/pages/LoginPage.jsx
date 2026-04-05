@@ -27,8 +27,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-crust flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-text mb-2">BackOffice</h1>
-        <p className="text-muted text-sm mb-8">Sign in to your account</p>
+        <img src="/logo.png" alt="M.S.ECO Cleaning Service" className="w-28 h-28 object-contain mx-auto mb-4" />
+        <p className="text-muted text-sm mb-8 text-center">Sign in to your account</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"

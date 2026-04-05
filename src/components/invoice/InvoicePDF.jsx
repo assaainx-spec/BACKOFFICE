@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer'
 import dayjs from 'dayjs'
+import logoAsset from '../../assets/logo.png'
 
 const LABELS = {
   nl: {
@@ -100,7 +101,7 @@ export default function InvoicePDF({ invoice, seller, qrDataUrl }) {
         {/* Header */}
         <View style={s.header}>
           <View>
-            {seller?.logoUrl && <Image src={seller.logoUrl} style={s.logo} />}
+            <Image src={seller?.logoUrl || logoAsset} style={s.logo} />
             <Text style={{ fontFamily: 'Helvetica-Bold', marginTop: 8 }}>{seller?.businessName}</Text>
             <Text style={s.meta}>{seller?.address}</Text>
             <Text>KvK: {seller?.kvkNumber}</Text>
